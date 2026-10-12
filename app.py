@@ -32,6 +32,10 @@ def register():
     if len(password) < 8:
         return render_template("register.html", error="Password must be at least 8 characters.")
 
+    confirm = request.form.get("confirm_password", "")
+    if password != confirm:
+        return render_template("register.html", error="Passwords do not match.")
+
     db = get_db()
     try:
         if db.execute("SELECT 1 FROM users WHERE email = ?", (email,)).fetchone():
