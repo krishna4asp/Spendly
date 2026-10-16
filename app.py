@@ -101,9 +101,35 @@ def logout():
     return redirect(url_for("landing"))
 
 
-@app.route("/profile")
+@app.route("/profile", methods=["GET", "POST"])
 def profile():
-    return "Profile page — coming in Step 4"
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+
+    user_id = session["user_id"]
+
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        db = get_db()
+        try:
+            if not name:
+                user = db.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+                return render_template("profile.html", user=user, error="Name cannot be empty.")
+            db.execute("UPDATE users SET name = ? WHERE id = ?", (name, user_id))
+            db.commit()
+        finally:
+            db.close()
+        session["user_name"] = name
+        return redirect(url_for("profile", updated="1"))
+
+    db = get_db()
+    try:
+        user = db.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+    finally:
+        db.close()
+
+    success = "Profile updated successfully." if request.args.get("updated") else None
+    return render_template("profile.html", user=user, success=success)
 
 
 @app.route("/expenses/add")
