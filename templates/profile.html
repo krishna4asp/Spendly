@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Profile — Spendly{% endblock %}
+
+{% block content %}
+<section class="profile-section">
+    <div class="profile-container">
+
+        <div class="profile-hero">
+            <div class="profile-avatar">
+                {% set parts = user.name.split() %}
+                <span class="profile-avatar-initials">
+                    {{- parts[0][0] | upper -}}
+                    {%- if parts | length >= 2 %}{{ parts[1][0] | upper }}{% endif -%}
+                </span>
+            </div>
+            <div class="profile-hero-info">
+                <h1 class="profile-hero-name">{{ user.name }}</h1>
+                <p class="profile-hero-email">{{ user.email }}</p>
+                <p class="profile-hero-since">Member since {{ user.created_at[:10] }}</p>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <div class="profile-card-header">
+                <h2 class="profile-card-title">Account Details</h2>
+                <p class="profile-card-desc">Update your display name.</p>
+            </div>
+
+            {% if error %}
+            <div class="auth-error">{{ error }}</div>
+            {% endif %}
+            {% if success %}
+            <div class="profile-success">{{ success }}</div>
+            {% endif %}
+
+            <form method="POST" action="/profile">
+                <div class="form-group">
+                    <label for="name">Full name</label>
+                    <input type="text" id="name" name="name"
+                           class="form-input" value="{{ user.name }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="email_display">Email address</label>
+                    <input type="email" id="email_display"
+                           class="form-input" value="{{ user.email }}" disabled>
+                    <span class="form-hint">Email address cannot be changed.</span>
+                </div>
+                <button type="submit" class="btn-profile-save">Save changes</button>
+            </form>
+        </div>
+
+        <div class="profile-card profile-card--muted">
+            <div class="profile-card-header">
+                <h2 class="profile-card-title">Security</h2>
+                <p class="profile-card-desc">Manage your password.</p>
+            </div>
+            <p class="profile-placeholder">Password change — coming soon.</p>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
