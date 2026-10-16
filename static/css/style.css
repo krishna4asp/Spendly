@@ -920,6 +920,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ------------------------------------------------------------------ */
+<<<<<<< HEAD
 /* Profile stats, transactions, categories                             */
 /* ------------------------------------------------------------------ */
 
@@ -1006,6 +1007,8 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ------------------------------------------------------------------ */
+=======
+>>>>>>> origin/main
 /* Responsive                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -1029,7 +1032,10 @@ a { color: inherit; text-decoration: none; }
 
     .profile-hero { flex-direction: column; text-align: center; }
     .profile-section { padding: 2rem 1rem 4rem; }
+<<<<<<< HEAD
     .profile-stats { grid-template-columns: 1fr; }
     .category-row { grid-template-columns: 100px 1fr 70px; }
     .tx-table { display: block; overflow-x: auto; }
+=======
+>>>>>>> origin/main
 }
