@@ -920,6 +920,92 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ------------------------------------------------------------------ */
+/* Profile stats, transactions, categories                             */
+/* ------------------------------------------------------------------ */
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--paper-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.stat-card svg { width: 20px; height: 20px; color: var(--accent); }
+.stat-label { font-size: 13px; color: var(--ink-muted); }
+.stat-value { font-size: 22px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+.tx-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.tx-table th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--ink-muted);
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.tx-table td { padding: 12px; border-bottom: 1px solid var(--border-soft); }
+.tx-table tr:last-child td { border-bottom: none; }
+.tx-table tr:hover td { background: var(--paper-warm); }
+.tx-table .tx-amount { text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; }
+
+.category-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--accent-light);
+    color: var(--accent);
+}
+
+.category-list { display: flex; flex-direction: column; gap: 14px; }
+
+.category-row {
+    display: grid;
+    grid-template-columns: 120px 1fr 90px;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+}
+
+.category-name { color: var(--ink-soft); font-weight: 500; }
+
+.category-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.category-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 99px;
+}
+
+.category-amount {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-muted);
+    font-size: 13px;
+}
+
+/* ------------------------------------------------------------------ */
 /* Responsive                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -943,4 +1029,7 @@ a { color: inherit; text-decoration: none; }
 
     .profile-hero { flex-direction: column; text-align: center; }
     .profile-section { padding: 2rem 1rem 4rem; }
+    .profile-stats { grid-template-columns: 1fr; }
+    .category-row { grid-template-columns: 100px 1fr 70px; }
+    .tx-table { display: block; overflow-x: auto; }
 }

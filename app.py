@@ -13,6 +13,8 @@ app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-change-in-prod")
 
 @app.route("/")
 def landing():
+    if session.get("user_id"):
+        return redirect(url_for("profile"))
     return render_template("landing.html")
 
 
@@ -52,7 +54,7 @@ def register():
     finally:
         db.close()
 
-    return redirect(url_for("landing"))
+    return redirect(url_for("profile"))
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -78,7 +80,7 @@ def login():
 
     session["user_id"]   = user["id"]
     session["user_name"] = user["name"]
-    return redirect(url_for("landing"))
+    return redirect(url_for("profile"))
 
 
 # ------------------------------------------------------------------ #
@@ -129,7 +131,32 @@ def profile():
         db.close()
 
     success = "Profile updated successfully." if request.args.get("updated") else None
-    return render_template("profile.html", user=user, success=success)
+
+    stats = {
+        "total_spent":  "₹8,830.00",
+        "tx_count":     8,
+        "top_category": "Bills",
+    }
+
+    transactions = [
+        {"date": "2026-10-11", "description": "Miscellaneous",  "category": "Other",         "amount": "₹350.00"},
+        {"date": "2026-10-10", "description": "Restaurant",     "category": "Food",          "amount": "₹480.00"},
+        {"date": "2026-10-09", "description": "Clothes",        "category": "Shopping",      "amount": "₹2,100.00"},
+        {"date": "2026-10-07", "description": "Movie + dinner", "category": "Entertainment", "amount": "₹1,200.00"},
+        {"date": "2026-10-05", "description": "Pharmacy",       "category": "Health",        "amount": "₹600.00"},
+    ]
+
+    categories = [
+        {"name": "Bills",         "amount": "₹3,200.00", "pct": 36},
+        {"name": "Shopping",      "amount": "₹2,100.00", "pct": 24},
+        {"name": "Food",          "amount": "₹1,330.00", "pct": 15},
+        {"name": "Entertainment", "amount": "₹1,200.00", "pct": 14},
+        {"name": "Health",        "amount": "₹600.00",   "pct": 7},
+        {"name": "Other",         "amount": "₹400.00",   "pct": 4},
+    ]
+
+    return render_template("profile.html", user=user, success=success,
+                           stats=stats, transactions=transactions, categories=categories)
 
 
 @app.route("/expenses/add")
