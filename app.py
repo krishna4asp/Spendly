@@ -131,6 +131,10 @@ def profile():
     finally:
         db.close()
 
+    if user is None:
+        session.clear()
+        return redirect(url_for("login"))
+
     success = "Profile updated successfully." if request.args.get("updated") else None
 
     stats = get_summary_stats(user_id)
