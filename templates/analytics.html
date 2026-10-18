@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics — Spendly{% endblock %}
+
+{% block content %}
+<section class="analytics-section">
+    <div class="analytics-container">
+
+        <!-- Intro -->
+        <div class="analytics-intro">
+            <p class="analytics-badge">Coming soon</p>
+            <h1 class="analytics-headline">Powerful analytics are<br><em>coming soon.</em></h1>
+            <p class="analytics-lead">
+                We're building deep insights into your spending habits — trends, forecasts,
+                and category breakdowns that help you make smarter financial decisions.
+            </p>
+        </div>
+
+        <!-- Hero image -->
+        <div class="analytics-hero-img">
+            <img src="{{ url_for('static', filename='images/analytics-hero.png') }}"
+                 alt="Analytics preview" class="analytics-hero-photo">
+            <div class="analytics-hero-overlay">
+                <p class="analytics-badge analytics-badge--small">New feature</p>
+                <p class="analytics-overlay-title">Spend smarter, not harder.</p>
+                <p class="analytics-overlay-body">
+                    A cleaner view of where your money goes, with insights that actually matter.
+                </p>
+            </div>
+        </div>
+
+        <!-- Lower section -->
+        <div class="analytics-lower">
+
+            <!-- Notify card -->
+            <div class="analytics-card analytics-card--wide">
+                <div class="analytics-card-intro">
+                    <p class="analytics-badge">Notify me</p>
+                    <h2 class="analytics-card-title">Be the first to know.</h2>
+                    <p class="analytics-card-desc">
+                        Join the waitlist and we'll email you the moment Analytics launches for your account.
+                    </p>
+                </div>
+                <div class="analytics-notify-form">
+                    <div class="analytics-field">
+                        <label class="analytics-field-label">Email address</label>
+                        <input type="email" class="form-input analytics-field-input"
+                               placeholder="you@example.com" value="{{ session.get('user_name', '') }}">
+                    </div>
+                </div>
+                <div class="analytics-notify-footer">
+                    <p class="analytics-notify-disclaimer">
+                        We'll only send one email when Analytics is ready for you.
+                    </p>
+                    <button class="btn-primary analytics-notify-btn">Notify me</button>
+                </div>
+            </div>
+
+            <!-- Preview card -->
+            <div class="analytics-card">
+                <div class="analytics-card-intro">
+                    <p class="analytics-badge">Sneak peek</p>
+                    <h2 class="analytics-card-title">What's next.</h2>
+                    <p class="analytics-card-desc">
+                        Expect richer insights, smarter summaries, and a clearer picture of your financial health.
+                    </p>
+                </div>
+                <ul class="analytics-feature-list">
+                    <li class="analytics-feature-item">
+                        <span class="analytics-feature-num">1</span>
+                        <span>Monthly spending trends</span>
+                    </li>
+                    <li class="analytics-feature-item">
+                        <span class="analytics-feature-num">2</span>
+                        <span>Category deep-dives</span>
+                    </li>
+                    <li class="analytics-feature-item">
+                        <span class="analytics-feature-num">3</span>
+                        <span>Budget vs. actual tracking</span>
+                    </li>
+                </ul>
+                <div class="analytics-launch-note">
+                    <p class="analytics-badge">Launching soon</p>
+                    <p class="analytics-card-desc">
+                        Your current Dashboard remains fully available. Analytics will appear right alongside it.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}
