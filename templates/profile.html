@@ -97,6 +97,7 @@
             <div class="profile-card">
                 <div class="profile-card-header">
                     <h2 class="profile-card-title">Recent Transactions</h2>
+                    <a href="{{ url_for('add_expense') }}" class="btn-add-expense">+ Add Expense</a>
                     {% if date_from or date_to %}
                     <p class="profile-card-desc">Filtered: {{ date_from or '…' }} → {{ date_to or '…' }}</p>
                     {% endif %}

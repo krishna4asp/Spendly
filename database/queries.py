@@ -101,3 +101,17 @@ def get_category_breakdown(user_id, date_from=None, date_to=None):
         return cats
     finally:
         db.close()
+
+
+def insert_expense(user_id, amount, category, date, description):
+    db = get_db()
+    try:
+        cur = db.execute(
+            "INSERT INTO expenses (user_id, amount, category, date, description)"
+            " VALUES (?, ?, ?, ?, ?)",
+            (user_id, amount, category, date, description),
+        )
+        db.commit()
+        return cur.lastrowid
+    finally:
+        db.close()
