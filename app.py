@@ -2,6 +2,7 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from database.db import get_db, init_db, seed_db
+from database.queries import get_summary_stats, get_recent_transactions, get_category_breakdown
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-change-in-prod")
@@ -130,30 +131,17 @@ def profile():
     finally:
         db.close()
 
+    if user is None:
+        session.clear()
+        return redirect(url_for("login"))
+
     success = "Profile updated successfully." if request.args.get("updated") else None
 
-    stats = {
-        "total_spent":  "₹8,830.00",
-        "tx_count":     8,
-        "top_category": "Bills",
-    }
+    stats = get_summary_stats(user_id)
 
-    transactions = [
-        {"date": "2026-10-11", "description": "Miscellaneous",  "category": "Other",         "amount": "₹350.00"},
-        {"date": "2026-10-10", "description": "Restaurant",     "category": "Food",          "amount": "₹480.00"},
-        {"date": "2026-10-09", "description": "Clothes",        "category": "Shopping",      "amount": "₹2,100.00"},
-        {"date": "2026-10-07", "description": "Movie + dinner", "category": "Entertainment", "amount": "₹1,200.00"},
-        {"date": "2026-10-05", "description": "Pharmacy",       "category": "Health",        "amount": "₹600.00"},
-    ]
+    transactions = get_recent_transactions(user_id)
 
-    categories = [
-        {"name": "Bills",         "amount": "₹3,200.00", "pct": 36},
-        {"name": "Shopping",      "amount": "₹2,100.00", "pct": 24},
-        {"name": "Food",          "amount": "₹1,330.00", "pct": 15},
-        {"name": "Entertainment", "amount": "₹1,200.00", "pct": 14},
-        {"name": "Health",        "amount": "₹600.00",   "pct": 7},
-        {"name": "Other",         "amount": "₹400.00",   "pct": 4},
-    ]
+    categories = get_category_breakdown(user_id)
 
     return render_template("profile.html", user=user, success=success,
                            stats=stats, transactions=transactions, categories=categories)
