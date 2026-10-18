@@ -17,7 +17,7 @@
             <div class="profile-hero-info">
                 <h1 class="profile-hero-name">{{ user.name }}</h1>
                 <p class="profile-hero-email">{{ user.email }}</p>
-                <p class="profile-hero-since">Member since {{ user.created_at[:10] }}</p>
+                <p class="profile-hero-since">Member since {{ user.created_at | month_year }}</p>
             </div>
         </div>
 
@@ -58,69 +58,138 @@
             <p class="profile-placeholder">Password change — coming soon.</p>
         </div>
 
+        <div class="date-filter-bar">
+            <div class="date-filter-presets">
+                <button type="button" class="date-filter-preset" data-preset="all">All Time</button>
+                <button type="button" class="date-filter-preset" data-preset="month">This Month</button>
+                <button type="button" class="date-filter-preset" data-preset="3months">Last 3 Months</button>
+                <button type="button" class="date-filter-preset" data-preset="6months">Last 6 Months</button>
+            </div>
+            <form class="date-filter-custom" method="GET" action="{{ url_for('profile') }}" id="dateFilterForm">
+                <label for="date_from" class="sr-only">From date</label>
+                <input type="date" id="date_from" name="date_from" value="{{ date_from }}">
+                <span class="date-filter-sep">to</span>
+                <label for="date_to" class="sr-only">To date</label>
+                <input type="date" id="date_to" name="date_to" value="{{ date_to }}">
+                <button type="submit" class="btn-filter">Apply</button>
+                {% if date_from or date_to %}
+                <a href="/profile" class="btn-filter-clear">Clear</a>
+                {% endif %}
+            </form>
+        </div>
+
         <div class="profile-stats">
             <div class="stat-card">
-                <i data-lucide="credit-card"></i>
                 <span class="stat-label">Total Spent</span>
                 <span class="stat-value">{{ stats.total_spent }}</span>
             </div>
             <div class="stat-card">
-                <i data-lucide="layers"></i>
                 <span class="stat-label">Transactions</span>
                 <span class="stat-value">{{ stats.tx_count }}</span>
             </div>
             <div class="stat-card">
-                <i data-lucide="tag"></i>
                 <span class="stat-label">Top Category</span>
                 <span class="stat-value">{{ stats.top_category }}</span>
             </div>
         </div>
 
-        <div class="profile-card">
-            <div class="profile-card-header">
-                <h2 class="profile-card-title">Recent Transactions</h2>
-                <p class="profile-card-desc">Your latest expenses.</p>
-            </div>
-            <table class="tx-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Category</th>
-                        <th class="tx-amount">Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for tx in transactions %}
-                    <tr>
-                        <td>{{ tx.date }}</td>
-                        <td>{{ tx.description }}</td>
-                        <td><span class="category-badge category-badge--{{ tx.category | lower }}">{{ tx.category }}</span></td>
-                        <td class="tx-amount">{{ tx.amount }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <div class="profile-card">
-            <div class="profile-card-header">
-                <h2 class="profile-card-title">Spending by Category</h2>
-                <p class="profile-card-desc">Where your money goes.</p>
-            </div>
-            <div class="category-list">
-                {% for cat in categories %}
-                <div class="category-row">
-                    <span class="category-name">{{ cat.name }}</span>
-                    <div class="category-bar">
-                        <div class="category-bar-fill" style="width: {{ cat.pct }}%"></div>
-                    </div>
-                    <span class="category-amount">{{ cat.amount }}</span>
+        <div class="profile-dashboard">
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <h2 class="profile-card-title">Recent Transactions</h2>
+                    {% if date_from or date_to %}
+                    <p class="profile-card-desc">Filtered: {{ date_from or '…' }} → {{ date_to or '…' }}</p>
+                    {% endif %}
                 </div>
-                {% endfor %}
+                <table class="tx-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th class="tx-amount">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tx in transactions %}
+                        <tr>
+                            <td>{{ tx.date }}</td>
+                            <td>{{ tx.description }}</td>
+                            <td><span class="category-badge category-badge--{{ tx.category | lower }}">{{ tx.category }}</span></td>
+                            <td class="tx-amount">{{ tx.amount }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <h2 class="profile-card-title">By Category</h2>
+                    {% if date_from or date_to %}
+                    <p class="profile-card-desc">Filtered: {{ date_from or '…' }} → {{ date_to or '…' }}</p>
+                    {% endif %}
+                </div>
+                <div class="category-list">
+                    {% for cat in categories %}
+                    <div class="category-row">
+                        <span class="category-name">{{ cat.name }}</span>
+                        <div class="category-bar">
+                            <div class="category-bar-fill category-bar-fill--{{ cat.name | lower | replace(' ', '-') }}"
+                                 style="width: {{ cat.pct }}%"></div>
+                        </div>
+                        <span class="category-amount">{{ cat.amount }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
 
     </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    var form      = document.getElementById('dateFilterForm');
+    var fromInput = document.getElementById('date_from');
+    var toInput   = document.getElementById('date_to');
+
+    function toISO(d) {
+        var y   = d.getFullYear();
+        var m   = String(d.getMonth() + 1).padStart(2, '0');
+        var day = String(d.getDate()).padStart(2, '0');
+        return y + '-' + m + '-' + day;
+    }
+
+    var today      = new Date();
+    var firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    var minus3     = new Date(today.getFullYear(), today.getMonth() - 3, today.getDate());
+    var minus6     = new Date(today.getFullYear(), today.getMonth() - 6, today.getDate());
+
+    var ranges = {
+        'all':     { from: '',                to: ''           },
+        'month':   { from: toISO(firstOfMonth), to: toISO(today) },
+        '3months': { from: toISO(minus3),     to: toISO(today) },
+        '6months': { from: toISO(minus6),     to: toISO(today) }
+    };
+
+    var currentFrom = fromInput.value;
+    var currentTo   = toInput.value;
+
+    document.querySelectorAll('.date-filter-preset').forEach(function (btn) {
+        var r = ranges[btn.dataset.preset];
+        if (r.from === currentFrom && r.to === currentTo) {
+            btn.classList.add('date-filter-preset--active');
+        }
+        btn.addEventListener('click', function () {
+            var range = ranges[this.dataset.preset];
+            fromInput.value = range.from;
+            toInput.value   = range.to;
+            form.submit();
+        });
+    });
+})();
+</script>
 {% endblock %}

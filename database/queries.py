@@ -1,21 +1,42 @@
+from datetime import datetime
 from database.db import get_db
 
 
-def get_summary_stats(user_id):
+def _fmt_date(iso):
+    try:
+        return datetime.strptime(iso, "%Y-%m-%d").strftime("%d %b %Y")
+    except (ValueError, TypeError):
+        return iso
+
+
+def _build_where(user_id, date_from, date_to):
+    clauses = ["user_id = ?"]
+    params  = [user_id]
+    if date_from:
+        clauses.append("date >= ?")
+        params.append(date_from)
+    if date_to:
+        clauses.append("date <= ?")
+        params.append(date_to)
+    return "WHERE " + " AND ".join(clauses), params
+
+
+def get_summary_stats(user_id, date_from=None, date_to=None):
     db = get_db()
     try:
+        where, params = _build_where(user_id, date_from, date_to)
         row = db.execute(
             "SELECT COALESCE(SUM(amount), 0) as total, COUNT(*) as cnt "
-            "FROM expenses WHERE user_id = ?",
-            (user_id,),
+            "FROM expenses " + where,
+            params,
         ).fetchone()
         total = row["total"]
         cnt   = row["cnt"]
 
         top_row = db.execute(
-            "SELECT category FROM expenses WHERE user_id = ? "
+            "SELECT category FROM expenses " + where + " "
             "GROUP BY category ORDER BY SUM(amount) DESC LIMIT 1",
-            (user_id,),
+            params,
         ).fetchone()
         top_category = top_row["category"] if top_row else "—"
 
@@ -28,18 +49,19 @@ def get_summary_stats(user_id):
         db.close()
 
 
-def get_recent_transactions(user_id, limit=10):
+def get_recent_transactions(user_id, limit=10, date_from=None, date_to=None):
     db = get_db()
     try:
+        where, params = _build_where(user_id, date_from, date_to)
         rows = db.execute(
             "SELECT date, description, category, amount "
-            "FROM expenses WHERE user_id = ? "
+            "FROM expenses " + where + " "
             "ORDER BY date DESC LIMIT ?",
-            (user_id, limit),
+            params + [limit],
         ).fetchall()
         return [
             {
-                "date":        row["date"],
+                "date":        _fmt_date(row["date"]),
                 "description": row["description"] or "",
                 "category":    row["category"],
                 "amount":      f"₹{row['amount']:,.2f}",
@@ -50,14 +72,15 @@ def get_recent_transactions(user_id, limit=10):
         db.close()
 
 
-def get_category_breakdown(user_id):
+def get_category_breakdown(user_id, date_from=None, date_to=None):
     db = get_db()
     try:
+        where, params = _build_where(user_id, date_from, date_to)
         rows = db.execute(
             "SELECT category, SUM(amount) as total "
-            "FROM expenses WHERE user_id = ? "
+            "FROM expenses " + where + " "
             "GROUP BY category ORDER BY total DESC",
-            (user_id,),
+            params,
         ).fetchall()
         if not rows:
             return []
