@@ -920,7 +920,6 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ------------------------------------------------------------------ */
-<<<<<<< HEAD
 /* Profile stats, transactions, categories                             */
 /* ------------------------------------------------------------------ */
 
@@ -941,9 +940,22 @@ a { color: inherit; text-decoration: none; }
     gap: 8px;
 }
 
-.stat-card svg { width: 20px; height: 20px; color: var(--accent); }
-.stat-label { font-size: 13px; color: var(--ink-muted); }
-.stat-value { font-size: 22px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.stat-card svg { display: none; }
+.stat-label {
+    font-size: 11px;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+}
+.stat-value {
+    font-size: 42px;
+    font-weight: 400;
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+}
 
 .tx-table {
     width: 100%;
@@ -999,6 +1011,15 @@ a { color: inherit; text-decoration: none; }
     border-radius: 99px;
 }
 
+/* Per-category bar colors */
+.category-bar-fill--food          { background: #4a7c59; }
+.category-bar-fill--transport     { background: #e07b34; }
+.category-bar-fill--bills         { background: #4a7cb5; }
+.category-bar-fill--health        { background: #c0392b; }
+.category-bar-fill--entertainment { background: #8b7335; }
+.category-bar-fill--shopping      { background: #c9a020; }
+.category-bar-fill--other         { background: #888; }
+
 .category-amount {
     text-align: right;
     font-variant-numeric: tabular-nums;
@@ -1007,8 +1028,100 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ------------------------------------------------------------------ */
-=======
->>>>>>> origin/main
+/* Date filter                                                         */
+/* ------------------------------------------------------------------ */
+
+.date-filter-bar {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 20px;
+    background: var(--paper-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    margin-bottom: 24px;
+}
+
+.date-filter-presets {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.date-filter-preset {
+    padding: 7px 16px;
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    background: transparent;
+    color: var(--ink-soft);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.date-filter-preset:hover { border-color: var(--accent); color: var(--accent); }
+
+.date-filter-preset--active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.date-filter-preset--active:hover { opacity: 0.88; color: #fff; }
+
+.date-filter-custom {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.date-filter-custom input[type="date"] {
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--paper-card);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 13px;
+}
+
+.date-filter-custom input[type="date"]:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.date-filter-sep {
+    font-size: 13px;
+    color: var(--ink-muted);
+}
+
+.btn-filter {
+    padding: 7px 18px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 99px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-filter:hover { opacity: 0.88; }
+
+.profile-dashboard {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 24px;
+    align-items: start;
+}
+
+/* ------------------------------------------------------------------ */
 /* Responsive                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -1032,10 +1145,11 @@ a { color: inherit; text-decoration: none; }
 
     .profile-hero { flex-direction: column; text-align: center; }
     .profile-section { padding: 2rem 1rem 4rem; }
-<<<<<<< HEAD
     .profile-stats { grid-template-columns: 1fr; }
+    .profile-dashboard { grid-template-columns: 1fr; }
     .category-row { grid-template-columns: 100px 1fr 70px; }
     .tx-table { display: block; overflow-x: auto; }
-=======
->>>>>>> origin/main
+    .date-filter-bar { flex-direction: column; align-items: stretch; }
+    .date-filter-custom { margin-left: 0; flex-wrap: wrap; }
+    .stat-value { font-size: 32px; }
 }

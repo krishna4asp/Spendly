@@ -1,11 +1,31 @@
 import os
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from database.db import get_db, init_db, seed_db
 from database.queries import get_summary_stats, get_recent_transactions, get_category_breakdown
 
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-change-in-prod")
+
+
+@app.template_filter("month_year")
+def month_year_filter(value):
+    try:
+        return datetime.strptime(value[:7], "%Y-%m").strftime("%B %Y")
+    except (ValueError, TypeError):
+        return value
+
+
+def _parse_date(value):
+    if not value or len(value) != 10:
+        return None
+    try:
+        datetime.strptime(value, "%Y-%m-%d")
+        return value
+    except ValueError:
+        return None
 
 
 # ------------------------------------------------------------------ #
@@ -137,14 +157,16 @@ def profile():
 
     success = "Profile updated successfully." if request.args.get("updated") else None
 
-    stats = get_summary_stats(user_id)
+    date_from = _parse_date(request.args.get("date_from", ""))
+    date_to   = _parse_date(request.args.get("date_to", ""))
 
-    transactions = get_recent_transactions(user_id)
-
-    categories = get_category_breakdown(user_id)
+    stats        = get_summary_stats(user_id, date_from=date_from, date_to=date_to)
+    transactions = get_recent_transactions(user_id, date_from=date_from, date_to=date_to)
+    categories   = get_category_breakdown(user_id, date_from=date_from, date_to=date_to)
 
     return render_template("profile.html", user=user, success=success,
-                           stats=stats, transactions=transactions, categories=categories)
+                           stats=stats, transactions=transactions, categories=categories,
+                           date_from=date_from or "", date_to=date_to or "")
 
 
 @app.route("/expenses/add")
