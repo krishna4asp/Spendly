@@ -65,12 +65,12 @@
                 <button type="button" class="date-filter-preset" data-preset="3months">Last 3 Months</button>
                 <button type="button" class="date-filter-preset" data-preset="6months">Last 6 Months</button>
             </div>
-            <form class="date-filter-custom" method="GET" action="/profile" id="dateFilterForm">
-                <input type="date" id="date_from" name="date_from"
-                       aria-label="From date" value="{{ date_from }}">
+            <form class="date-filter-custom" method="GET" action="{{ url_for('profile') }}" id="dateFilterForm">
+                <label for="date_from" class="sr-only">From date</label>
+                <input type="date" id="date_from" name="date_from" value="{{ date_from }}">
                 <span class="date-filter-sep">to</span>
-                <input type="date" id="date_to" name="date_to"
-                       aria-label="To date" value="{{ date_to }}">
+                <label for="date_to" class="sr-only">To date</label>
+                <input type="date" id="date_to" name="date_to" value="{{ date_to }}">
                 <button type="submit" class="btn-filter">Apply</button>
                 {% if date_from or date_to %}
                 <a href="/profile" class="btn-filter-clear">Clear</a>
@@ -135,7 +135,7 @@
                     <div class="category-row">
                         <span class="category-name">{{ cat.name }}</span>
                         <div class="category-bar">
-                            <div class="category-bar-fill category-bar-fill--{{ cat.name | lower }}"
+                            <div class="category-bar-fill category-bar-fill--{{ cat.name | lower | replace(' ', '-') }}"
                                  style="width: {{ cat.pct }}%"></div>
                         </div>
                         <span class="category-amount">{{ cat.amount }}</span>
@@ -156,7 +156,12 @@
     var fromInput = document.getElementById('date_from');
     var toInput   = document.getElementById('date_to');
 
-    function toISO(d) { return d.toISOString().split('T')[0]; }
+    function toISO(d) {
+        var y   = d.getFullYear();
+        var m   = String(d.getMonth() + 1).padStart(2, '0');
+        var day = String(d.getDate()).padStart(2, '0');
+        return y + '-' + m + '-' + day;
+    }
 
     var today      = new Date();
     var firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
